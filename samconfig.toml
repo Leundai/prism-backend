@@ -1,0 +1,10 @@
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "prism-backend"
+s3_bucket = ""  # Will be created during guided deployment
+s3_prefix = "prism-backend"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=dev"

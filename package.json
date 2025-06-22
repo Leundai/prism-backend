@@ -1,0 +1,16 @@
+{
+  "name": "prism-backend",
+  "version": "1.0.0",
+  "description": "Prism Backend - AWS Serverless API",
+  "main": "src/lambda/handler.js",
+  "scripts": {
+    "build": "sam build",
+    "deploy": "sam deploy --guided",
+    "deploy-dev": "sam deploy --parameter-overrides Environment=dev",
+    "local": "sam local start-api",
+    "test": "sam local invoke PrismFunction"
+  },
+  "keywords": ["aws", "lambda", "api-gateway", "serverless"],
+  "author": "",
+  "license": "ISC"
+}

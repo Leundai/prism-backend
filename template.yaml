@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Prism Backend - Phase 1 API Gateway + Lambda
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: nodejs18.x
+    Environment:
+      Variables:
+        NODE_ENV: production
+
+Resources:
+  PrismApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+  PrismFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/
+      Handler: handler.handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PrismApi
+            Path: /{proxy+}
+            Method: ANY
+        RootApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PrismApi
+            Path: /
+            Method: ANY
+
+Outputs:
+  PrismApiUrl:
+    Description: "API Gateway endpoint URL for Dev stage"
+    Value: !Sub "https://${PrismApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"
+    Export:
+      Name: PrismApiUrl
+
+  PrismFunction:
+    Description: "Prism Lambda Function ARN"
+    Value: !GetAtt PrismFunction.Arn
+    Export:
+      Name: PrismFunctionArn
