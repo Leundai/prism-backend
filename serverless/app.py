@@ -25,12 +25,12 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    http_method = event.get('httpMethod', '')
-    path = event.get('path', '')
-    
-    if http_method == 'POST' and path == '/tweets/report':
+    http_method = event.get("httpMethod", "")
+    path = event.get("path", "")
+
+    if http_method == "POST" and path == "/tweets/report":
         return handle_tweets_report(event)
-    elif http_method == 'GET' and path == '/hello':
+    elif http_method == "GET" and path == "/hello":
         return handle_hello()
     else:
         return {
@@ -41,21 +41,22 @@ def lambda_handler(event, context):
 
 def handle_tweets_report(event):
     try:
-        body = json.loads(event.get('body', '[]'))
-        
-        if not isinstance(body, list):
+        body = json.loads(event.get("body", r"{}"))
+
+        if not isinstance(body, dict):
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Request body must be an array of tweets"}),
+                "body": json.dumps({"error": "Request body must be an object"}),
             }
-        
-        tweets_count = len(body)
-        
+
+        tweets = body["tweets"]
+        tweets_count = len(tweets)
+
         return {
             "statusCode": 200,
             "body": json.dumps({"tweets_received": tweets_count}),
         }
-    
+
     except json.JSONDecodeError:
         return {
             "statusCode": 400,
@@ -64,7 +65,7 @@ def handle_tweets_report(event):
     except Exception as e:
         return {
             "statusCode": 500,
-            "body": json.dumps({"error": "Internal server error"}),
+            "body": json.dumps({"error": f"Internal server error {e}"}),
         }
 
 
@@ -79,8 +80,10 @@ def handle_hello():
 
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
-        }),
+        "body": json.dumps(
+            {
+                "message": "hello world",
+                # "location": ip.text.replace("\n", "")
+            }
+        ),
     }
